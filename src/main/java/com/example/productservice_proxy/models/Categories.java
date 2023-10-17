@@ -8,7 +8,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class Categories extends BaseModel{
     private String name;
     private String description;

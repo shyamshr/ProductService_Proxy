@@ -1,17 +1,21 @@
 package com.example.productservice_proxy.services;
 
 import com.example.productservice_proxy.dtos.ProductDto;
+import com.example.productservice_proxy.models.Products;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 public interface IProductService {
-    String getAllProducts();
+    List<Products> getAllProducts();
 
-    String getSingleProduct(Long productId);
+    Products getSingleProduct(Long productId);
 
-    String addNewProduct(ProductDto productDto);
+    Products addNewProduct(ProductDto productDto);
 
-    String updateSingleProduct(Long productId);
+    Products updateSingleProduct(Long productId,ProductDto productDto);
 
-    String deleteSingleProduct(Long productId);
+    Products deleteSingleProduct(Long productId);
 
-    String patchSingleProduct(Long productId);
+    Products patchSingleProduct(Long productId,ProductDto productDto);
 }
