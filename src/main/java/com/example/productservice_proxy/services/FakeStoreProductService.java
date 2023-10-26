@@ -1,22 +1,18 @@
 package com.example.productservice_proxy.services;
 
-import com.example.productservice_proxy.clients.IClientProductDto;
+
 import com.example.productservice_proxy.clients.fakestore.client.FakeStoreClient;
 import com.example.productservice_proxy.clients.fakestore.dto.FakeStoreProductDto;
-import com.example.productservice_proxy.clients.fakestore.dto.FakeStoreRatingDto;
-import com.example.productservice_proxy.dtos.ProductDto;
+
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Products;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-@Service
+//@Service
 public class FakeStoreProductService implements IProductService {
     private FakeStoreClient fakeStoreClient;
     public FakeStoreProductService(FakeStoreClient fakeStoreClient){
@@ -38,14 +34,14 @@ public class FakeStoreProductService implements IProductService {
 
     }
     @Override
-    public Products addNewProduct(ProductDto productDto){
-        FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.addNewProduct(getFakeStoreProductDtoFromProductDto(productDto));
+    public Products addNewProduct(Products product){
+        FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.addNewProduct(getFakeStoreProductDtoFromProduct(product));
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
 
     @Override
-    public Products updateSingleProduct(Long productId,ProductDto productDto){
-        FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.updateSingleProduct(productId,getFakeStoreProductDtoFromProductDto(productDto));
+    public Products updateSingleProduct(Long productId,Products product){
+        FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.updateSingleProduct(productId,getFakeStoreProductDtoFromProduct(product));
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
 
@@ -55,8 +51,8 @@ public class FakeStoreProductService implements IProductService {
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
     @Override
-    public Products patchSingleProduct(Long productId,ProductDto productDto){
-        FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.patchSingleProduct(productId,getFakeStoreProductDtoFromProductDto(productDto));
+    public Products patchSingleProduct(Long productId,Products product){
+        FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.patchSingleProduct(productId,getFakeStoreProductDtoFromProduct(product));
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
     }
     private Products getProductFromFakeStoreProductDto(FakeStoreProductDto fakeStoreProductDto) {
@@ -70,19 +66,14 @@ public class FakeStoreProductService implements IProductService {
         product.setImageUrl(fakeStoreProductDto.getImage());
         return product;
     }
-    private FakeStoreProductDto getFakeStoreProductDtoFromProductDto(ProductDto productDto) {
-       FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
-        fakeStoreProductDto.setId(productDto.getId());
-        fakeStoreProductDto.setTitle(productDto.getTitle());
-        fakeStoreProductDto.setPrice(productDto.getPrice());
-        fakeStoreProductDto.setDescription(productDto.getDescription());
-        fakeStoreProductDto.setCategory(productDto.getCategory());
-        fakeStoreProductDto.setImage(productDto.getImage());
-        if(productDto.getRating() != null) {
-            fakeStoreProductDto.setRating(new FakeStoreRatingDto());
-            fakeStoreProductDto.getRating().setRate(productDto.getRating().getRate());
-            fakeStoreProductDto.getRating().setCount(productDto.getRating().getCount());
-        }
+    private FakeStoreProductDto getFakeStoreProductDtoFromProduct(Products product) {
+        FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
+        fakeStoreProductDto.setId(product.getId());
+        fakeStoreProductDto.setTitle(product.getTitle());
+        fakeStoreProductDto.setPrice(product.getPrice());
+        fakeStoreProductDto.setDescription(product.getDescription());
+        fakeStoreProductDto.setCategory(product.getCategory().getName());
+        fakeStoreProductDto.setImage(product.getImageUrl());
         return fakeStoreProductDto;
     }
 }

@@ -11,11 +11,11 @@ public interface IProductService {
 
     Products getSingleProduct(Long productId);
 
-    Products addNewProduct(ProductDto productDto);
+    Products addNewProduct(Products product);
 
-    Products updateSingleProduct(Long productId,ProductDto productDto);
+    Products updateSingleProduct(Long productId,Products product);
 
     Products deleteSingleProduct(Long productId);
 
-    Products patchSingleProduct(Long productId,ProductDto productDto);
+    Products patchSingleProduct(Long productId,Products product);
 }
