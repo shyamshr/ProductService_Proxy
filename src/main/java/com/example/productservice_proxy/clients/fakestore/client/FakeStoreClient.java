@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 
-@Component
+//@Component
 public class FakeStoreClient{
     private RestTemplateBuilder restTemplateBuilder;
     public FakeStoreClient(RestTemplateBuilder restTemplateBuilder) {

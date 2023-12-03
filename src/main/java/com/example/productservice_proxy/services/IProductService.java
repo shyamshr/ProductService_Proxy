@@ -1,21 +1,21 @@
 package com.example.productservice_proxy.services;
 
-import com.example.productservice_proxy.dtos.ProductDto;
-import com.example.productservice_proxy.models.Products;
-import org.springframework.http.ResponseEntity;
+import com.example.productservice_proxy.exceptions.NoProductsFoundException;
+import com.example.productservice_proxy.exceptions.ProductNotFoundException;
+import com.example.productservice_proxy.models.Product;
 
 import java.util.List;
 
 public interface IProductService {
-    List<Products> getAllProducts();
+    List<Product> getAllProducts() throws NoProductsFoundException;
 
-    Products getSingleProduct(Long productId);
+    Product getSingleProduct(Long productId) throws ProductNotFoundException;
 
-    Products addNewProduct(Products product);
+    Product addNewProduct(Product product);
 
-    Products updateSingleProduct(Long productId,Products product);
+    Product updateSingleProduct (Long productId, Product product);
 
-    Products deleteSingleProduct(Long productId);
+    void deleteSingleProduct(Long productId) throws ProductNotFoundException;
 
-    Products patchSingleProduct(Long productId,Products product);
+    Product patchSingleProduct(Long productId, Product product) throws ProductNotFoundException;
 }

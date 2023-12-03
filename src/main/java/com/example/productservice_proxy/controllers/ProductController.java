@@ -2,13 +2,13 @@ package com.example.productservice_proxy.controllers;
 
 
 import com.example.productservice_proxy.dtos.ProductDto;
-import com.example.productservice_proxy.models.Categories;
-import com.example.productservice_proxy.models.Products;
+import com.example.productservice_proxy.exceptions.ProductNotFoundException;
+import com.example.productservice_proxy.exceptions.NoProductsFoundException;
+import com.example.productservice_proxy.models.Product;
 import com.example.productservice_proxy.services.IProductService;
+import com.example.productservice_proxy.utils.CommonUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -25,37 +25,42 @@ public ProductController(IProductService iProductService){
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
+    public ResponseEntity<List<ProductDto>> getAllProducts() throws NoProductsFoundException {
         try {
-            List<Products> productsList = iProductService.getAllProducts();
-            List<ProductDto> productDtoList = new ArrayList<>();
-            for (Products product : productsList) {
-                productDtoList.add(getProductDtoFromProducts(product));
-            }
+            List<Product> productList = iProductService.getAllProducts();
+            List<ProductDto> productDtoList = CommonUtils.getProductDtoListFromProductList(productList);
             ResponseEntity<List<ProductDto>> responseEntity = new ResponseEntity<>(productDtoList, HttpStatus.OK);
             return responseEntity;
-        } catch (Exception e) {
-           throw e; //handled by ExceptionAdvices
+        } catch (NoProductsFoundException e) {
+            throw e;
+        }catch (Exception e){
+            throw e;
         }
     }
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDto> getSingleProduct(@PathVariable("productId") Long productId){
+    public ResponseEntity<ProductDto> getSingleProduct(@PathVariable("productId") Long productId) throws ProductNotFoundException {
         try {
+            /*
+            //to add headers
             MultiValueMap<String,String> headers= new LinkedMultiValueMap<>();
             headers.add("Content-Type","application/json");
             headers.add("Accept","application/json");
             headers.add("auth-token","hey_provide_access");
-            ProductDto productDto = getProductDtoFromProducts(iProductService.getSingleProduct(productId));
-            ResponseEntity<ProductDto> responseEntity = new ResponseEntity<>(productDto, headers,HttpStatus.OK);
+            */
+            ProductDto productDto = CommonUtils.getProductDtoFromProducts(iProductService.getSingleProduct(productId));
+            ResponseEntity<ProductDto> responseEntity = new ResponseEntity<>(productDto,HttpStatus.OK);
             return responseEntity;
-        }catch(Exception e){
+        }catch(ProductNotFoundException e){
+            throw e;
+        }
+        catch (Exception e) {
             throw e;
         }
     }
     @PostMapping("")
     public ResponseEntity<ProductDto> addNewProduct(@RequestBody ProductDto productDto){
         try {
-            ProductDto productDtoResponse = getProductDtoFromProducts(iProductService.addNewProduct(getProductFromProductDto(productDto)));
+            ProductDto productDtoResponse = CommonUtils.getProductDtoFromProducts(iProductService.addNewProduct(CommonUtils.getProductFromProductDto(productDto)));
             ResponseEntity<ProductDto> productsResponseEntity = new ResponseEntity<>(productDtoResponse, HttpStatus.CREATED);
             return productsResponseEntity;
         } catch (Exception e) {
@@ -65,7 +70,7 @@ public ProductController(IProductService iProductService){
     @PutMapping("/{productId}")
     public ResponseEntity<ProductDto> updateSingleProduct(@PathVariable("productId") Long productId,@RequestBody ProductDto productDto){
         try {
-            ProductDto productDtoResponse = getProductDtoFromProducts(iProductService.updateSingleProduct(productId,getProductFromProductDto(productDto)));
+            ProductDto productDtoResponse = CommonUtils.getProductDtoFromProducts(iProductService.updateSingleProduct(productId,CommonUtils.getProductFromProductDto(productDto)));
             ResponseEntity<ProductDto> productsResponseEntity = new ResponseEntity<>(productDtoResponse, HttpStatus.OK);
             return productsResponseEntity;
         } catch (Exception e) {
@@ -73,52 +78,32 @@ public ProductController(IProductService iProductService){
         }
     }
     @DeleteMapping("/{productId}")
-    public ResponseEntity<ProductDto> deleteSingleProduct(@PathVariable("productId") Long productId){
+    public ResponseEntity<ProductDto> deleteSingleProduct(@PathVariable("productId") Long productId) throws ProductNotFoundException {
         try {
-            ProductDto productDto = getProductDtoFromProducts(iProductService.deleteSingleProduct(productId));
+            ProductDto productDto = CommonUtils.getProductDtoFromProducts(iProductService.getSingleProduct(productId));
+            iProductService.deleteSingleProduct(productId);
             ResponseEntity<ProductDto> productsResponseEntity = new ResponseEntity<>(productDto, HttpStatus.OK);
             return productsResponseEntity;
-        }catch (Exception e){
-           throw e;
+        }catch(ProductNotFoundException e){
+            throw e;
+        }
+        catch (Exception e) {
+            throw e;
         }
 
 
     }
     @PatchMapping("/{productId}")
-    public ResponseEntity<ProductDto> patchSingleProduct(@PathVariable("productId") Long productId,@RequestBody ProductDto productDto){
+    public ResponseEntity<ProductDto> patchSingleProduct(@PathVariable("productId") Long productId,@RequestBody ProductDto productDto) throws ProductNotFoundException {
         try {
-            ProductDto productDtoResponse = getProductDtoFromProducts(iProductService.patchSingleProduct(productId,getProductFromProductDto(productDto)));
+            ProductDto productDtoResponse = CommonUtils.getProductDtoFromProducts(iProductService.patchSingleProduct(productId,CommonUtils.getProductFromProductDto(productDto)));
             ResponseEntity<ProductDto> productsResponseEntity = new ResponseEntity<>(productDtoResponse, HttpStatus.OK);
             return productsResponseEntity;
-        } catch (Exception e) {
+        } catch(ProductNotFoundException e){
             throw e;
         }
-    }
-    private ProductDto getProductDtoFromProducts(Products product) {
-        ProductDto productDto = new ProductDto();
-        productDto.setId(product.getId());
-        productDto.setTitle(product.getTitle());
-        productDto.setPrice(product.getPrice());
-        productDto.setDescription(product.getDescription());
-        productDto.setCategory(product.getCategory().getName());
-        productDto.setImage(product.getImageUrl());
-        return productDto;
-    }
-    private Products getProductFromProductDto(ProductDto productDto) {
-        Products product = new Products();
-        product.setId(productDto.getId());
-        product.setTitle(productDto.getTitle());
-        product.setPrice(productDto.getPrice());
-        product.setDescription(productDto.getDescription());
-        product.setCategory(new Categories());
-        product.getCategory().setName(productDto.getCategory());
-        product.setImageUrl(productDto.getImage());
-        return product;
-    }
-
-    //local exception handler for product controller
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<String> handleException(Exception e){
-        return  new ResponseEntity<>("Invalid Arguments Passed",HttpStatus.INTERNAL_SERVER_ERROR);
+        catch (Exception e) {
+            throw e;
+        }
     }
 }
