@@ -9,6 +9,8 @@ import com.example.productservice_proxy.services.IProductService;
 import com.example.productservice_proxy.utils.CommonUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.bind.annotation.*;
 
 

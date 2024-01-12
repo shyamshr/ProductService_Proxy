@@ -3,6 +3,8 @@ package com.example.productservice_proxy.repositories;
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,4 +23,6 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
     List<Product> findProductByPriceBetween(double minPrice, double maxPrice); // this method is used to find a product by price range (minPrice and maxPrice
 
     List<Product> findProductByCategory(Categories category); // this method is used to find a product by category
+    List<Product> findByTitle(String title); // this method is used to find a product by title
+    List<Product> findAllByTitleAndIsDeletedFalse(String title, Pageable pageable);
 }
