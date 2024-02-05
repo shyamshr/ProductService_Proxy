@@ -1,14 +1,21 @@
 package com.example.productservice_proxy.controllers;
 
 
+import com.example.productservice_proxy.clients.authentication.AuthenticationClient;
+import com.example.productservice_proxy.clients.authentication.dtos.ValidateTokenRequestDto;
+import com.example.productservice_proxy.clients.authentication.dtos.ValidateTokenResponseDto;
+import com.example.productservice_proxy.clients.authentication.models.Role;
+import com.example.productservice_proxy.clients.authentication.models.SessionStatus;
 import com.example.productservice_proxy.dtos.ProductDto;
 import com.example.productservice_proxy.exceptions.ProductNotFoundException;
 import com.example.productservice_proxy.exceptions.NoProductsFoundException;
 import com.example.productservice_proxy.models.Product;
 import com.example.productservice_proxy.services.IProductService;
 import com.example.productservice_proxy.utils.CommonUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +29,36 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
     private IProductService iProductService;
-public ProductController(IProductService iProductService){
+    private AuthenticationClient authenticationClient;
+    @Autowired
+    public ProductController(IProductService iProductService, AuthenticationClient authenticationClient){
         this.iProductService = iProductService;
+        this.authenticationClient = authenticationClient;
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ProductDto>> getAllProducts() throws NoProductsFoundException {
+    public ResponseEntity<List<ProductDto>> getAllProducts(@Nullable @RequestHeader("AUTH-TOKEN") String token,@Nullable @RequestHeader("userId") Long userId) throws NoProductsFoundException {
+        if(token == null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        ValidateTokenRequestDto validateTokenRequestDto = new ValidateTokenRequestDto();
+        validateTokenRequestDto.setToken(token);
+        validateTokenRequestDto.setUserId(userId);
+        ValidateTokenResponseDto validateTokenResponseDto = authenticationClient.validate(validateTokenRequestDto);
+        if(!validateTokenResponseDto.getSessionStatus().equals(SessionStatus.ACTIVE)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        boolean isAdmin = false;
+        for(Role role:validateTokenResponseDto.getUserDto().getRoles()){
+            if(role.getRole().equals("admin")){
+                isAdmin = true;
+                break;
+            }
+        }
+        if(!isAdmin){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         try {
             List<Product> productList = iProductService.getAllProducts();
             List<ProductDto> productDtoList = CommonUtils.getProductDtoListFromProductList(productList);

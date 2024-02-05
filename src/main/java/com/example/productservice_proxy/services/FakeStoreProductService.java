@@ -6,13 +6,16 @@ import com.example.productservice_proxy.clients.fakestore.dto.FakeStoreProductDt
 
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-//@Service
+@Service
+@Primary
 public class FakeStoreProductService implements IProductService {
     private FakeStoreClient fakeStoreClient;
     public FakeStoreProductService(FakeStoreClient fakeStoreClient){

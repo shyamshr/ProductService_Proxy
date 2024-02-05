@@ -3,6 +3,7 @@ package com.example.productservice_proxy.clients.fakestore.client;
 import com.example.productservice_proxy.clients.fakestore.dto.FakeStoreProductDto;
 import com.example.productservice_proxy.clients.fakestore.dto.FakeStoreRatingDto;
 import com.example.productservice_proxy.dtos.ProductDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -19,9 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 
 
-//@Component
+@Component
 public class FakeStoreClient{
     private RestTemplateBuilder restTemplateBuilder;
+    @Autowired
     public FakeStoreClient(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplateBuilder = restTemplateBuilder;
     }
