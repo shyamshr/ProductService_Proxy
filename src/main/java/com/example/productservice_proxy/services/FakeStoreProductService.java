@@ -7,6 +7,8 @@ import com.example.productservice_proxy.clients.fakestore.dto.FakeStoreProductDt
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -15,12 +17,20 @@ import java.util.List;
 
 
 @Service
-@Primary
+//@Primary
 public class FakeStoreProductService implements IProductService {
     private FakeStoreClient fakeStoreClient;
-    public FakeStoreProductService(FakeStoreClient fakeStoreClient){
+    private RedisTemplate<Long, Object> redisTemplate;
+    public FakeStoreProductService(FakeStoreClient fakeStoreClient, RedisTemplate<Long, Object> redisTemplate){
         this.fakeStoreClient = fakeStoreClient;
+        this.redisTemplate = redisTemplate;
     }
+
+    @Override
+    public Page<Product> getProductsByTitle(String query, int sizeOfPage, int offset) {
+        return null;
+    }
+
     @Override
     public List<Product> getAllProducts(){
         List<FakeStoreProductDto> fakeStoreProductDtoList = this.fakeStoreClient.getAllProducts();
@@ -32,7 +42,14 @@ public class FakeStoreProductService implements IProductService {
     }
     @Override
     public Product getSingleProduct(Long productId){
+        FakeStoreProductDto redisFakeStoreProductDto = (FakeStoreProductDto) redisTemplate.opsForHash().get(productId,"PRODUCTS");
+        if(redisFakeStoreProductDto != null){
+            return getProductFromFakeStoreProductDto(redisFakeStoreProductDto);
+        }
+
         FakeStoreProductDto fakeStoreProductDto = this.fakeStoreClient.getSingleProduct(productId);
+       redisTemplate.opsForHash().put(productId,"PRODUCTS",fakeStoreProductDto);
+
         return getProductFromFakeStoreProductDto(fakeStoreProductDto);
 
     }

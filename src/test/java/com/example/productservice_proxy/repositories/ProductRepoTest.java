@@ -2,23 +2,22 @@ package com.example.productservice_proxy.repositories;
 
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
+import com.example.productservice_proxy.repositories.category.CategoryRepo;
+import com.example.productservice_proxy.repositories.products.ProductRepo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-@SpringBootTest
+@SpringBootTest()
 class ProductRepoTest {
     @PersistenceContext
     private EntityManager entityManager;
-    @Autowired
+    //@Autowired
     private ProductRepo productRepo;
-    @Autowired
+    //@Autowired
     private CategoryRepo categoryRepo;
 
     @Test

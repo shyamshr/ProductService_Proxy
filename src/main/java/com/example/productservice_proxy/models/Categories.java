@@ -7,12 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.List;
 
 @Getter
 @Setter
 @Entity
+@Document(indexName = "Categories")
 public class Categories extends BaseModel{
     private String name;
     private String description;

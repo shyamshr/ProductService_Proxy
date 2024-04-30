@@ -4,6 +4,7 @@ import com.example.productservice_proxy.dtos.CategoryDto;
 import com.example.productservice_proxy.dtos.ProductDto;
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +65,10 @@ public class CommonUtils {
             categoriesDtoList.add(getCategoryDtoFromCategory(categories));
         }
         return categoriesDtoList;
+    }
+    public static Page<ProductDto> getProductDtoPageFromProductPage(Page<Product> productPage){
+        if(productPage == null)
+            return null;
+        return productPage.map(CommonUtils::getProductDtoFromProducts);
     }
 }

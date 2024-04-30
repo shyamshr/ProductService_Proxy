@@ -5,7 +5,7 @@ import com.example.productservice_proxy.exceptions.NoCategoriesFoundException;
 import com.example.productservice_proxy.exceptions.NoProductsFoundException;
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
-import com.example.productservice_proxy.repositories.CategoryRepo;
+import com.example.productservice_proxy.repositories.category.CategoryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

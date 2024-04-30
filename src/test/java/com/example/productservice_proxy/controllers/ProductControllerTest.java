@@ -1,35 +1,9 @@
 package com.example.productservice_proxy.controllers;
 
-import com.example.productservice_proxy.dtos.ProductDto;
-import com.example.productservice_proxy.exceptions.NoProductsFoundException;
-import com.example.productservice_proxy.exceptions.ProductNotFoundException;
-import com.example.productservice_proxy.models.Categories;
-import com.example.productservice_proxy.models.Product;
-import com.example.productservice_proxy.repositories.ProductRepo;
-import com.example.productservice_proxy.services.IDatabaseCategoryService;
-import com.example.productservice_proxy.services.IProductService;
-import com.example.productservice_proxy.services.SelfProductService;
-import com.example.productservice_proxy.utils.CommonUtils;
-import jdk.jfr.Description;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class ProductControllerTest {

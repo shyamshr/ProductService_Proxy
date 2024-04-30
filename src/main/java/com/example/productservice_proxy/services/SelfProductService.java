@@ -4,16 +4,22 @@ import com.example.productservice_proxy.exceptions.NoProductsFoundException;
 import com.example.productservice_proxy.exceptions.ProductNotFoundException;
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;
-import com.example.productservice_proxy.repositories.ProductRepo;
+import com.example.productservice_proxy.repositories.products.ProductElasticSearchRepo;
+import com.example.productservice_proxy.repositories.products.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Primary
 public class SelfProductService implements IProductService {
     private ProductRepo productRepo;
+    private ProductElasticSearchRepo productElasticSearchRepo;
     private IDatabaseCategoryService databaseCategoryService;
 
     @Autowired
@@ -21,6 +27,12 @@ public class SelfProductService implements IProductService {
         this.productRepo = productRepo;
         this.databaseCategoryService = databaseCategoryService;
     }
+
+    @Override
+    public Page<Product> getProductsByTitle(String query,int sizeOfPage, int offset) {
+        return this.productElasticSearchRepo.findProductByTitleOrDescContainingPhrase(query, PageRequest.of(offset,sizeOfPage));
+    }
+
     @Override
     public List<Product> getAllProducts() throws NoProductsFoundException {
         Optional<List<Product>> productList = Optional.ofNullable(this.productRepo.findAllByIsDeletedFalse());
@@ -46,7 +58,7 @@ public class SelfProductService implements IProductService {
         else{
             product.setCategory(this.databaseCategoryService.addNewCategory(product.getCategory()));
         }
-
+        this.productElasticSearchRepo.save(product);
         return this.productRepo.save(product);
     }
 
@@ -60,6 +72,7 @@ public class SelfProductService implements IProductService {
         else{
             product.setCategory(this.databaseCategoryService.addNewCategory(product.getCategory()));
         }
+        this.productElasticSearchRepo.save(product);
         return this.productRepo.save(product);
     }
 
@@ -69,6 +82,7 @@ public class SelfProductService implements IProductService {
         if(product.isEmpty())
             throw new ProductNotFoundException("No Product was found with id: "+productId);
         product.get().setDeleted(true);
+        this.productElasticSearchRepo.save(product.get());
         this.productRepo.save(product.get());
     }
     @Override
@@ -78,10 +92,8 @@ public class SelfProductService implements IProductService {
         if(existingProduct.isEmpty())
             throw new ProductNotFoundException("No Product was found with id: "+productId);
         Product patchedProduct = this.convertExistingProductToPatchedProduct(existingProduct.get(), product);
+        this.productElasticSearchRepo.save(patchedProduct);
         return this.productRepo.save(patchedProduct);
-    }
-    public List<Product> getProductsInACategory(Long categoryId){
-        return this.productRepo.findProductByCategoryId(categoryId);
     }
     private Product convertExistingProductToPatchedProduct(Product existingProduct, Product product){
         if(product.getTitle() != null){

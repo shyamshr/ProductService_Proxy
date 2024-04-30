@@ -5,10 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @ToString
-public class FakeStoreProductDto implements IClientProductDto {
+public class FakeStoreProductDto implements IClientProductDto, Serializable {
     private long id;
     private String title;
     private String description;

@@ -1,4 +1,4 @@
-package com.example.productservice_proxy.repositories;
+package com.example.productservice_proxy.repositories.category;
 
 import com.example.productservice_proxy.models.Categories;
 import com.example.productservice_proxy.models.Product;

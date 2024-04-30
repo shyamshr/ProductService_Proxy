@@ -7,12 +7,14 @@ import com.example.productservice_proxy.clients.authentication.dtos.ValidateToke
 import com.example.productservice_proxy.clients.authentication.models.Role;
 import com.example.productservice_proxy.clients.authentication.models.SessionStatus;
 import com.example.productservice_proxy.dtos.ProductDto;
+import com.example.productservice_proxy.dtos.SearchRequestDto;
 import com.example.productservice_proxy.exceptions.ProductNotFoundException;
 import com.example.productservice_proxy.exceptions.NoProductsFoundException;
 import com.example.productservice_proxy.models.Product;
 import com.example.productservice_proxy.services.IProductService;
 import com.example.productservice_proxy.utils.CommonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -35,9 +37,14 @@ public class ProductController {
         this.iProductService = iProductService;
         this.authenticationClient = authenticationClient;
     }
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<ProductDto>> getProductsByTitle(@RequestBody SearchRequestDto searchRequestDto){
+        return new ResponseEntity<>(CommonUtils.getProductDtoPageFromProductPage(iProductService.getProductsByTitle(searchRequestDto.getQuery(),searchRequestDto.getSizeOfPage(),searchRequestDto.getOffset())),HttpStatus.OK);
+    }
 
     @GetMapping("")
-    public ResponseEntity<List<ProductDto>> getAllProducts(@Nullable @RequestHeader("AUTH-TOKEN") String token,@Nullable @RequestHeader("userId") Long userId) throws NoProductsFoundException {
+    public ResponseEntity<List<ProductDto>> getAllProducts() throws NoProductsFoundException {
+        /*Implementing authentication without spring security
         if(token == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -58,6 +65,7 @@ public class ProductController {
         if(!isAdmin){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+         */
 
         try {
             List<Product> productList = iProductService.getAllProducts();
